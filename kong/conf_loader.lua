@@ -73,6 +73,7 @@ local CONF_INFERENCES = {
   -- forced string inferences (or else are retrieved as numbers)
   proxy_listen = {typ = "array"},
   admin_listen = {typ = "array"},
+  origins = {typ = "array"},
   db_update_frequency = { typ = "number" },
   db_update_propagation = { typ = "number" },
   db_cache_ttl = { typ = "number" },
@@ -731,6 +732,14 @@ local function load(path, custom_conf)
       if listener.ssl == true then
         conf.admin_ssl_enabled = true
         break
+      end
+    end
+
+    -- Validate origins
+    local origin_pat = "([^=]+):([%d]+)=([^=]+):([%d]+)$"
+    for i, v in ipairs(conf.origins) do
+      if not v:match(origin_pat) then
+        return nil, "origins must be of form 'from_address:from_port=to_address:to_port'"
       end
     end
   end
