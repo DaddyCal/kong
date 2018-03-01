@@ -92,6 +92,7 @@ describe("DNS", function()
     }
 
     local ip, port, code = balancer.execute({
+      scheme = "http",
       type = "name",
       port = nil,
       host = "konghq.com",
@@ -111,6 +112,7 @@ describe("DNS", function()
     }
 
     local ip, port, code = balancer.execute({
+      scheme = "http",
       type = "name",
       port = nil,
       host = "konghq.com",

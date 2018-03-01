@@ -529,6 +529,7 @@ return {
       end
 
       local balancer_data = {
+        scheme         = upstream_url_t.scheme,
         type           = upstream_url_t.type, -- type of 'host': ipv4, ipv6, name
         host           = upstream_url_t.host, -- target host per `upstream_url`
         port           = upstream_url_t.port, -- final target port
@@ -646,14 +647,17 @@ return {
       end
 
       do
+        local balancer_data = ctx.balancer_data
+
+        -- set the upstream scheme as balancer selected
+        local upstream_scheme = balancer_data.scheme
+        var.upstream_scheme = upstream_scheme
+
         -- set the upstream host header if not `preserve_host`
         local upstream_host = var.upstream_host
-
         if not upstream_host or upstream_host == "" then
-          local balancer_data = ctx.balancer_data
           upstream_host = balancer_data.hostname
 
-          local upstream_scheme = var.upstream_scheme
           if upstream_scheme == "http"  and balancer_data.port ~= 80 or
              upstream_scheme == "https" and balancer_data.port ~= 443
           then
