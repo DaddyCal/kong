@@ -752,6 +752,18 @@ end
 -- which do not support sending it)
 -- @return true on success, nil+error message+status code otherwise
 local function execute(target, ctx)
+  do -- Check for KONG_ORIGINS override
+    local origin_key = target.scheme .. "://" .. utils.format_host(target)
+    local origin = singletons.origins[origin_key]
+    if origin then
+      target.type = origin.type -- won't be "name"
+      target.scheme = origin.scheme
+      target.ip = origin.host
+      target.port = origin.port
+      target.hostname = target.host
+      return true
+    end
+  end
 
   if target.type ~= "name" then
     -- it's an ip address (v4 or v6), so nothing we can do...

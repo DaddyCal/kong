@@ -743,7 +743,8 @@ local function load(path, custom_conf)
         return nil, "origins must be of form 'from_scheme://from_address:from_port=to_scheme://to_address:to_port'"
       end
       -- Validate 'from'
-      local from_authority, err = utils.format_host(utils.normalize_ip(from_host_port))
+      local from_authority, err =
+        utils.format_host(utils.normalize_ip(from_host_port))
       if not from_authority then
         return nil, err
       end
