@@ -145,13 +145,6 @@ describe("Router", function()
       assert.same(use_case[1].route,   match_t.route)
     end)
 
-    it("[host] ignores port", function()
-      -- host
-      local match_t = router.select("GET", "/", "domain-1.org:123")
-      assert.truthy(match_t)
-      assert.same(use_case[1].route, match_t.route)
-    end)
-
     it("[uri]", function()
       -- uri
       local match_t = router.select("GET", "/my-route", "domain.org")
@@ -870,6 +863,10 @@ describe("Router", function()
         assert.is_nil(router.select("GET", "/", "domain-3.org"))
       end)
 
+      it("unknown port", function()
+        assert.is_nil(router.select("GET", "/", "domain-1.org:123", ngx))
+      end)
+
       it("invalid host in [host + uri]", function()
         assert.is_nil(router.select("GET", "/route-4", "domain-3.org"))
       end)
@@ -1551,7 +1548,7 @@ describe("Router", function()
             preserve_host = true,
           },
           headers         = {
-            host          = { "preserve.com" },
+            host          = { "preserve.com", "preserve.com:123" },
           },
         },
         -- use the route's upstream_url's Host

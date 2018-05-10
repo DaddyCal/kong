@@ -620,7 +620,7 @@ function _M.new(routes)
   end)
 
 
-  local function find_route(req_method, req_uri, req_host, ngx)
+  local function find_route(req_method, req_uri, req_host, req_scheme, ngx)
     if type(req_method) ~= "string" then
       return error("arg #1 method must be a string")
     end
@@ -649,10 +649,18 @@ function _M.new(routes)
     req_method = upper(req_method)
 
     if req_host then
-      -- strip port number if given because matching ignores ports
+      -- strip port number if default
       local idx = find(req_host, ":", 2, true)
       if idx then
-        req_host = sub(req_host, 1, idx - 1)
+        local default_port
+        if req_scheme == "http" then
+          default_port = "80"
+        elseif req_scheme == "https" then
+          default_port = "443"
+        end
+        if sub(req_host, idx + 1) == default_port then
+          req_host = sub(req_host, 1, idx - 1)
+        end
       end
     end
 
@@ -852,6 +860,7 @@ function _M.new(routes)
 
 
   function self.exec(ngx)
+    local req_scheme = ngx.var.scheme
     local req_method = ngx.req.get_method()
     local req_uri    = ngx.var.request_uri
     local req_host   = ngx.var.http_host or ""
@@ -863,7 +872,7 @@ function _M.new(routes)
       end
     end
 
-    local match_t = find_route(req_method, req_uri, req_host, ngx)
+    local match_t = find_route(req_method, req_uri, req_host, req_scheme, ngx)
     if not match_t then
       return nil
     end
