@@ -738,9 +738,10 @@ local function load(path, custom_conf)
     -- Validate origins
     local seen_origins = {}
     for i, v in ipairs(conf.origins) do
-      local from_scheme, from_host_port, to_host_port = v:match("^(https?)://([^=]+:[%d]+)=https?://(.+:[%d]+)$")
+      local from_scheme, from_host_port, to_host_port =
+        v:match("^(https?)://([^=]+:[%d]+)=https?://([^/]+)$")
       if not from_scheme then
-        return nil, "origins must be of form 'from_scheme://from_address:from_port=to_scheme://to_address:to_port'"
+        return nil, "origins must be of form 'from_scheme://from_host:from_port=to_scheme://to_host:to_port'"
       end
       -- Validate 'from'
       local from_authority, err =
@@ -758,9 +759,6 @@ local function load(path, custom_conf)
       local to, err = utils.normalize_ip(to_host_port)
       if not to then
         return nil, err
-      end
-      if to.type == "name" then
-        return nil, "origin destination must be an address"
       end
     end
   end

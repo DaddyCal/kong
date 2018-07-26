@@ -756,12 +756,10 @@ local function execute(target, ctx)
     local origin_key = target.scheme .. "://" .. utils.format_host(target)
     local origin = singletons.origins[origin_key]
     if origin then
-      target.type = origin.type -- won't be "name"
+      target.type = origin.type
       target.scheme = origin.scheme
-      target.ip = origin.host
+      target.host = origin.host
       target.port = origin.port
-      target.hostname = target.host
-      return true
     end
   end
 
